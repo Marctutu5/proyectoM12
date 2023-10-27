@@ -15,7 +15,7 @@ main_bp = Blueprint(
 def init():
     return redirect(url_for('main_bp.product_list'))
 
-@main_bp.route('/products/list')
+@main_bp.route('/products/lista')
 def product_list():
     # select amb join que retorna una llista dwe resultats
     products_with_category = db.session.query(Product, Category).join(Category).order_by(Product.id.asc()).all()
