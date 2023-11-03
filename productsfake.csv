@@ -1,41 +1,38 @@
-id,title,description,photo,price,category_id,seller_id
-1,Bread - White Mini Epi,Descripción del producto,image-1.jpg,Koruna,2,31
-2,Sachet,Descripción del producto,image-2.jpg,Euro,2,12
-3,Saskatoon Berries - Frozen,Descripción del producto,image-3.jpg,Euro,6,32
-4,Cotton Wet Mop 16 Oz,Descripción del producto,image-4.jpg,Euro,2,23
-5,Cookies - Fortune,Descripción del producto,image-5.jpg,Rupiah,9,25
-6,"Wine - Harrow Estates, Vidal",Descripción del producto,image-6.jpg,Peso,1,16
-7,Beets - Mini Golden,Descripción del producto,image-7.jpg,Yuan Renminbi,10,27
-8,"Radish - Black, Winter, Organic",Descripción del producto,image-8.jpg,Yuan Renminbi,9,16
-9,"Soup - Knorr, Veg / Beef",Descripción del producto,image-9.jpg,Yuan Renminbi,1,1
-10,Broom - Push,Descripción del producto,image-10.jpg,Real,5,28
-11,"Plate - Foam, Bread And Butter",Descripción del producto,image-11.jpg,Rupiah,4,22
-12,Tea - Herbal - 6 Asst,Descripción del producto,image-12.jpg,Rupiah,5,18
-13,"Veal - Inside Round / Top, Lean",Descripción del producto,image-13.jpg,Rupiah,10,36
-14,Sobe - Green Tea,Descripción del producto,image-14.jpg,Pound,1,40
-15,"Pepper - Paprika, Hungarian",Descripción del producto,image-15.jpg,Zloty,10,26
-16,Wine - Ej Gallo Sierra Valley,Descripción del producto,image-16.jpg,Baht,1,28
-17,Anchovy Paste - 56 G Tube,Descripción del producto,image-17.jpg,Yen,8,25
-18,Gelatine Powder,Descripción del producto,image-18.jpg,Koruna,7,28
-19,Sobe - Lizard Fuel,Descripción del producto,image-19.jpg,Zloty,3,7
-20,Towel Multifold,Descripción del producto,image-20.jpg,Yuan Renminbi,9,5
-21,Butter - Unsalted,Descripción del producto,image-21.jpg,Dollar,1,31
-22,Lentils - Green Le Puy,Descripción del producto,image-22.jpg,Shilling,7,32
-23,Wine - Chateau Timberlay,Descripción del producto,image-23.jpg,Peso,2,32
-24,Wine - Winzer Krems Gruner,Descripción del producto,image-24.jpg,Yuan Renminbi,4,27
-25,Onion Powder,Descripción del producto,image-25.jpg,Yen,8,39
-26,Muffin - Carrot Individual Wrap,Descripción del producto,image-26.jpg,Lempira,9,24
-27,Duck - Legs,Descripción del producto,image-27.jpg,Yen,4,39
-28,Muffin Batt - Carrot Spice,Descripción del producto,image-28.jpg,Ruble,7,36
-29,Eel - Smoked,Descripción del producto,image-29.jpg,Rial,6,23
-30,Flour - Bread,Descripción del producto,image-30.jpg,Krona,7,13
-31,Lid - 0090 Clear,Descripción del producto,image-31.jpg,Peso,4,12
-32,Beer - Moosehead,Descripción del producto,image-32.jpg,Krona,4,21
-33,"Mushroom - Oyster, Fresh",Descripción del producto,image-33.jpg,Rupiah,1,26
-34,Celery,Descripción del producto,image-34.jpg,Yen,2,26
-35,"Soup - Campbells, Cream Of",Descripción del producto,image-35.jpg,Yuan Renminbi,3,29
-36,Wine - Magnotta - Cab Franc,Descripción del producto,image-36.jpg,Rial,10,40
-37,Flour - Cake,Descripción del producto,image-37.jpg,Peso,8,31
-38,Lime Cordial - Roses,Descripción del producto,image-38.jpg,Euro,7,4
-39,Cheese - Gouda Smoked,Descripción del producto,image-39.jpg,Dollar,8,21
-40,Cheese - Goat With Herbs,Descripción del producto,image-40.jpg,Dollar,1,1
+id,title,description,photo,price,category_id,seller_id,created,updated
+4,Cotton Wet Mop 16 Oz,Descripción del producto,image-4.jpg,Euro,2,23,2023-10-21 17:34:08,2023-10-21 17:34:08
+5,Cookies - Fortune,Descripción del producto,image-5.jpg,Rupiah,9,25,2023-10-21 17:34:08,2023-10-21 17:34:08
+6,"Wine - Harrow Estates, Vidal",Descripción del producto,image-6.jpg,Peso,1,16,2023-10-21 17:34:08,2023-10-21 17:34:08
+7,Beets - Mini Golden,Descripción del producto,image-7.jpg,Yuan Renminbi,10,27,2023-10-21 17:34:08,2023-10-21 17:34:08
+8,"Radish - Black, Winter, Organic",Descripción del producto,image-8.jpg,Yuan Renminbi,9,16,2023-10-21 17:34:08,2023-10-21 17:34:08
+9,"Soup - Knorr, Veg / Beef",Descripción del producto,image-9.jpg,Yuan Renminbi,1,1,2023-10-21 17:34:08,2023-10-21 17:34:08
+10,Broom - Push,Descripción del producto,image-10.jpg,Real,5,28,2023-10-21 17:34:08,2023-10-21 17:34:08
+11,"Plate - Foam, Bread And Butter",Descripción del producto,image-11.jpg,Rupiah,4,22,2023-10-21 17:34:08,2023-10-21 17:34:08
+12,Tea - Herbal - 6 Asst,Descripción del producto,image-12.jpg,Rupiah,5,18,2023-10-21 17:34:08,2023-10-21 17:34:08
+13,"Veal - Inside Round / Top, Lean",Descripción del producto,image-13.jpg,Rupiah,10,36,2023-10-21 17:34:08,2023-10-21 17:34:08
+14,Sobe - Green Tea,Descripción del producto,image-14.jpg,Pound,1,40,2023-10-21 17:34:08,2023-10-21 17:34:08
+15,"Pepper - Paprika, Hungarian",Descripción del producto,image-15.jpg,Zloty,10,26,2023-10-21 17:34:08,2023-10-21 17:34:08
+16,Wine - Ej Gallo Sierra Valley,Descripción del producto,image-16.jpg,Baht,1,28,2023-10-21 17:34:08,2023-10-21 17:34:08
+17,Anchovy Paste - 56 G Tube,Descripción del producto,image-17.jpg,Yen,8,25,2023-10-21 17:34:08,2023-10-21 17:34:08
+18,Gelatine Powder,Descripción del producto,image-18.jpg,Koruna,7,28,2023-10-21 17:34:08,2023-10-21 17:34:08
+19,Sobe - Lizard Fuel,Descripción del producto,image-19.jpg,Zloty,3,7,2023-10-21 17:34:08,2023-10-21 17:34:08
+20,Towel Multifold,Descripción del producto,image-20.jpg,Yuan Renminbi,9,5,2023-10-21 17:34:08,2023-10-21 17:34:08
+21,Butter - Unsalted,Descripción del producto,image-21.jpg,Dollar,1,31,2023-10-21 17:34:08,2023-10-21 17:34:08
+22,Lentils - Green Le Puy,Descripción del producto,image-22.jpg,Shilling,7,32,2023-10-21 17:34:08,2023-10-21 17:34:08
+23,Wine - Chateau Timberlay,Descripción del producto,image-23.jpg,Peso,2,32,2023-10-21 17:34:08,2023-10-21 17:34:08
+24,Wine - Winzer Krems Gruner,Descripción del producto,image-24.jpg,Yuan Renminbi,4,27,2023-10-21 17:34:08,2023-10-21 17:34:08
+25,Onion Powder,Descripción del producto,image-25.jpg,Yen,8,39,2023-10-21 17:34:08,2023-10-21 17:34:08
+26,Muffin - Carrot Individual Wrap,Descripción del producto,image-26.jpg,Lempira,9,24,2023-10-21 17:34:08,2023-10-21 17:34:08
+27,Duck - Legs,Descripción del producto,image-27.jpg,Yen,4,39,2023-10-21 17:34:08,2023-10-21 17:34:08
+28,Muffin Batt - Carrot Spice,Descripción del producto,image-28.jpg,Ruble,7,36,2023-10-21 17:34:08,2023-10-21 17:34:08
+29,Eel - Smoked,Descripción del producto,image-29.jpg,Rial,6,23,2023-10-21 17:34:08,2023-10-21 17:34:08
+30,Flour - Bread,Descripción del producto,image-30.jpg,Krona,7,13,2023-10-21 17:34:08,2023-10-21 17:34:08
+31,Lid - 0090 Clear,Descripción del producto,image-31.jpg,Peso,4,12,2023-10-21 17:34:08,2023-10-21 17:34:08
+32,Beer - Moosehead,Descripción del producto,image-32.jpg,Krona,4,21,2023-10-21 17:34:08,2023-10-21 17:34:08
+33,"Mushroom - Oyster, Fresh",Descripción del producto,image-33.jpg,Rupiah,1,26,2023-10-21 17:34:08,2023-10-21 17:34:08
+34,Celery,Descripción del producto,image-34.jpg,Yen,2,26,2023-10-21 17:34:08,2023-10-21 17:34:08
+35,"Soup - Campbells, Cream Of",Descripción del producto,image-35.jpg,Yuan Renminbi,3,29,2023-10-21 17:34:08,2023-10-21 17:34:08
+36,Wine - Magnotta - Cab Franc,Descripción del producto,image-36.jpg,Rial,10,40,2023-10-21 17:34:08,2023-10-21 17:34:08
+37,Flour - Cake,Descripción del producto,image-37.jpg,Peso,8,31,2023-10-21 17:34:08,2023-10-21 17:34:08
+38,Lime Cordial - Roses,Descripción del producto,image-38.jpg,Euro,7,4,2023-10-21 17:34:08,2023-10-21 17:34:08
+39,Cheese - Gouda Smoked,Descripción del producto,image-39.jpg,Dollar,8,21,2023-10-21 17:34:08,2023-10-21 17:34:08
+40,Cheese - Goat With Herbs,Descripción del producto,image-40.jpg,Dollar,1,1,2023-10-21 17:34:08,2023-10-21 17:34:08

@@ -5,41 +5,53 @@ import csv
 from flask import Flask, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
-
-# Create Flaskk app, config the db and load the db object
-# http://flask-sqlalchemy.pocoo.org/2.1/quickstart/#a-minimal-application
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
 
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    # Add other product fields here as necessary
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
 
-    def __repr__(self):
-        return "<User: {}>".format(self.username)
-
+def load_csv(csv_file: TextIOWrapper, model):
+    csv_reader = csv.reader(csv_file)
+    next(csv_reader, None)  # skip the headers
+    for row in csv_reader:
+        record = model(*row)
+        db.session.add(record)
+    db.session.commit()
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_csv():
     if request.method == 'POST':
-        csv_file = request.files['file']
-        csv_file = TextIOWrapper(csv_file, encoding='utf-8')
-        csv_reader = csv.reader(csv_file, delimiter=',')
-        for row in csv_reader:
-            user = User(username=row[0], email=row[1])
-            db.session.add(user)
-            db.session.commit()
+        file = request.files['file']
+        filename = file.filename
+        csv_file = TextIOWrapper(file, encoding='utf-8')
+        if 'categories' in filename:
+            load_csv(csv_file, Category)
+        elif 'products' in filename:
+            load_csv(csv_file, Product)
+        elif 'users' in filename:
+            load_csv(csv_file, User)
         return redirect(url_for('upload_csv'))
-    return """
+    return '''
             <form method='post' action='/' enctype='multipart/form-data'>
-              Upload a csv file: <input type='file' name='file'>
+              <input type='file' name='file'>
               <input type='submit' value='Upload'>
             </form>
-           """
+           '''
 
 if __name__ == '__main__':
     db.create_all()
-    app.run()
+    app.run(debug=True)
+
