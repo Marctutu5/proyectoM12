@@ -1,22 +1,55 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from werkzeug.security import check_password_hash
+from flask import Blueprint, redirect, render_template, url_for
+from flask_login import current_user, login_user, login_required, logout_user
+from . import login_manager
 from .models import User
+from .forms import LoginForm
+from . import db_manager as db
+from werkzeug.security import check_password_hash
 
-auth = Blueprint('auth', __name__)
+# Blueprint
+auth_bp = Blueprint(
+    "auth_bp", __name__, template_folder="templates", static_folder="static"
+)
 
-@auth.route('/login', methods=['GET', 'POST'])
+@auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        user = User.query.filter_by(email=email).first()
-        if user and user.password == password:  # Simplemente comparar las contraseñas
-            # Login successful, redirect to home page with success message
-            flash('Login successful!', category='success')
-            return redirect(url_for('main.index'))
-        else:
-            # Login failed, redirect to login page with error message
-            flash('Invalid login credentials', category='error')
-            return redirect(url_for('auth.login'))
-    return render_template('auth/login.html')
+    # Si ya está autenticado, redirige a donde desees (en este caso, "main_bp.lista")
+    if current_user.is_authenticated:
+        return redirect(url_for("main_bp.init"))
 
+    form = LoginForm()
+    if form.validate_on_submit(): # si se ha enviado el formulario via POST y es correcto
+        email = form.email.data
+        plain_text_password = form.password.data
+
+        user = load_user(email)
+        if user and check_password_hash(user.password, plain_text_password):
+            # aquí se crea la cookie y se inicia sesión
+            login_user(user)
+            print('Login successful', 'success')
+            return redirect(url_for("main_bp.init"))
+
+        # si llega aquí, es que no se ha autenticado correctamente
+        print('Login failed. Please check your credentials.', 'error')
+        return redirect(url_for("auth_bp.login"))
+    
+    return render_template('/auth/login.html', form=form)
+
+
+@login_manager.user_loader
+def load_user(email):
+    if email is not None:
+        # select amb 1 resultat o cap
+        user_or_none = db.session.query(User).filter(User.email == email).one_or_none()
+        return user_or_none
+    return None
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    return redirect(url_for("auth_bp.login"))
+
+@auth_bp.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("auth_bp.login"))
