@@ -1,17 +1,25 @@
 {% extends '_template.html' %}
 {% block content %}
 
-<h3>Producte {{ product.id }}</h3>
-<a href="/products/update/{{ product.id }}">Modificar producte</a>
-<br />
-<a href="/products/delete/{{ product.id }}">Esborrar producte</a>
-<ul>
-   <li>Nom: {{ product.title }}</li>
-   <li>Descripció: {{ product.description }}</li>
-   <li>Preu: {{ product.price }}</li>
-   <li>Categoria: {{ category.name }} </li>
-</ul>
-<p><img src="/static/products/{{ product.photo }}" alt="{{ product.title }}" /></p>
-<a href="/products/lista">&#x3c;&#x3c; Tornar al llistat de productes</a>
+<div class="container p-4">
+    <h3 class="text-4xl font-semibold text-gray-800">Producte {{ product.id }}</h3>
+    
+    <!-- Botón para Modificar -->
+    <a href="/products/update/{{ product.id }}" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2">Modificar producte</a>
+
+    <!-- Botón para Esborrar -->
+    <a href="/products/delete/{{ product.id }}" class="inline-block bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-2">Esborrar producte</a>
+
+    <ul class="mt-4">
+        <li class="mb-2">Nom: {{ product.title }}</li>
+        <li class="mb-2">Descripció: {{ product.description }}</li>
+        <li class="mb-2">Preu: {{ product.price }}</li>
+        <li class="mb-2">Categoria: {{ category.name }} </li>
+    </ul>
+
+    <p class="mt-4"><img src="/static/products/{{ product.photo }}" alt="{{ product.title }}" class="max-w-full h-auto"></p>
+
+    <a href="/products/lista" class="mt-4 inline-block bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"> Tornar al llistat de productes</a>
+</div>
 
 {% endblock %}

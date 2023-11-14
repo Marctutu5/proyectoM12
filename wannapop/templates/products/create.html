@@ -2,18 +2,43 @@
 {% from "_formhelpers.html" import render_errors %}
 {% block content %}
 
-<h3>Nou producte</h3>
+<h3 class="text-xl font-semibold text-gray-800">Nou producte</h3>
 
-<form action="/products/create" method="POST" enctype="multipart/form-data">
-   {{ form.csrf_token }}
-   <p>{{ form.title.label }}: {{ form.title() }}</p>
-   <p>{{ form.description.label }}: {{ form.description() }}</p>
-   <p>{{ form.photo_file.label }}: {{ form.photo_file() }}</p>
-   <p>{{ form.price.label }}: {{ form.price() }}</p>
-   <p>{{ form.category_id.label }}: {{ form.category_id() }}</p>
-   <p>{{ form.submit(value="CREAR") }}</p>
-   {{ render_errors(form) }}
+<form action="/products/create" method="POST" enctype="multipart/form-data" class="max-w-md mx-auto mt-4 p-4 bg-gray-100">
+    {{ form.csrf_token }}
+    
+    <div class="mb-4">
+        <label for="title" class="block text-sm font-medium text-gray-600">Títol:</label>
+        {{ form.title(class="mt-1 p-2 block w-full rounded-md bg-white border border-gray-300 focus:border-blue-500 focus:outline-none focus:shadow-outline-blue transition duration-150 ease-in-out") }}
+    </div>
+
+    <div class="mb-4">
+        <label for="description" class="block text-sm font-medium text-gray-600">Descripció:</label>
+        {{ form.description(class="mt-1 p-2 block w-full rounded-md bg-white border border-gray-300 focus:border-blue-500 focus:outline-none focus:shadow-outline-blue transition duration-150 ease-in-out") }}
+    </div>
+
+    <div class="mb-4">
+        <label for="photo_file" class="block text-sm font-medium text-gray-600">Fitxer de foto:</label>
+        {{ form.photo_file(class="mt-1 p-2 block w-full rounded-md bg-white border border-gray-300 focus:border-blue-500 focus:outline-none focus:shadow-outline-blue transition duration-150 ease-in-out") }}
+    </div>
+
+    <div class="mb-4">
+        <label for="price" class="block text-sm font-medium text-gray-600">Preu:</label>
+        {{ form.price(class="mt-1 p-2 block w-full rounded-md bg-white border border-gray-300 focus:border-blue-500 focus:outline-none focus:shadow-outline-blue transition duration-150 ease-in-out") }}
+    </div>
+
+    <div class="mb-4">
+        <label for="category_id" class="block text-sm font-medium text-gray-600">ID de categoria:</label>
+        {{ form.category_id(class="mt-1 p-2 block w-full rounded-md bg-white border border-gray-300 focus:border-blue-500 focus:outline-none focus:shadow-outline-blue transition duration-150 ease-in-out") }}
+    </div>
+
+    <div class="mb-4">
+        {{ form.submit(class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded") }}
+    </div>
+
+    {{ render_errors(form) }}
 </form>
-<a href="/products/lista">&#x3c;&#x3c; Tornar al llistat de productes</a>
+
+<a href="/products/lista" class="mt-4 inline-block bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"> Tornar al llistat de productes</a>
 
 {% endblock %}
