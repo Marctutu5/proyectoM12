@@ -1,6 +1,7 @@
 from . import db_manager as db
 from sqlalchemy.sql import func
 from flask_login import UserMixin
+from datetime import datetime
 
 class Product(db.Model):
     __tablename__ = "products"
@@ -23,8 +24,11 @@ class Category(db.Model):
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, unique=True, nullable=True)  # Puedes ajustar la columna según tus necesidades
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
+    created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     def get_id(self):
         return self.email

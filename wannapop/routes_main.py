@@ -19,7 +19,6 @@ def init():
     else:
         return redirect(url_for("auth_bp.login"))
 
-
 @main_bp.route('/products/lista')
 @login_required
 def product_list():
@@ -28,10 +27,9 @@ def product_list():
     
     return render_template('products/list.html', products_with_category = products_with_category)
 
-@main_bp.route('/products/create', methods = ['POST', 'GET'])
+@main_bp.route('/products/create', methods=['POST', 'GET'])
 @login_required
-def product_create(): 
-
+def product_create():
     # select que retorna una llista de resultats
     categories = db.session.query(Category).order_by(Category.id.asc()).all()
 
@@ -39,9 +37,11 @@ def product_create():
     form = ProductForm()
     form.category_id.choices = [(category.id, category.name) for category in categories]
 
-    if form.validate_on_submit(): # si s'ha fet submit al formulari
+    if form.validate_on_submit():  # si s'ha fet submit al formulari
         new_product = Product()
-        new_product.seller_id = None # en un el futur tindrà l'id de l'usuari autenticat
+        
+        # Asigna el seller_id utilizando el ID del usuario autenticado
+        new_product.seller_id = current_user.id
 
         # dades del formulari a l'objecte product
         form.populate_obj(new_product)
@@ -60,8 +60,9 @@ def product_create():
         # https://en.wikipedia.org/wiki/Post/Redirect/Get
         flash("Nou producte creat", "success")
         return redirect(url_for('main_bp.product_list'))
-    else: # GET
-        return render_template('products/create.html', form = form)
+    else:  # GET
+        return render_template('products/create.html', form=form)
+
 
 @main_bp.route('/products/read/<int:product_id>')
 @login_required

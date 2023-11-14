@@ -36,6 +36,37 @@ def login():
     return render_template('/auth/login.html', form=form)
 
 
+@auth_bp.route("/register", methods=["GET", "POST"])
+def register():
+    # Si ya está autenticado, redirige a donde desees
+    if current_user.is_authenticated:
+        return redirect(url_for("main_bp.init"))
+
+    form = RegisterForm()
+    if form.validate_on_submit():  # si se ha enviado el formulario via POST y es correcto
+        name = form.name.data
+        email = form.email.data
+        plain_text_password = form.password.data
+
+        # Verificar si ya existe un usuario con ese email
+        user = User.query.filter_by(email=email).first()
+        if user:
+            flash('Ya existe una cuenta con este correo electrónico.', 'error')
+            return redirect(url_for('auth_bp.register'))
+
+        # Crear un nuevo usuario
+        hashed_password = generate_password_hash(plain_text_password)
+        new_user = User(name=name, email=email, password=hashed_password)
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash('Registro exitoso. Ahora puedes iniciar sesión.', 'success')
+        return redirect(url_for('auth_bp.login'))
+
+    return render_template('/auth/register.html', form=form)
+
+
 @login_manager.user_loader
 def load_user(email):
     if email is not None:
