@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, url_for
+from flask import Blueprint, redirect, render_template, url_for, flash
 from flask_login import current_user, login_user, login_required, logout_user
 from . import login_manager
 from .models import User
@@ -26,11 +26,11 @@ def login():
         if user and check_password_hash(user.password, plain_text_password):
             # aquí se crea la cookie y se inicia sesión
             login_user(user)
-            print('Login successful', 'success')
+            flash('Inicio de sesión exitoso', 'success')
             return redirect(url_for("main_bp.init"))
 
         # si llega aquí, es que no se ha autenticado correctamente
-        print('Login failed. Please check your credentials.', 'error')
+        flash('Login Incorrecto. Porfavor revisa tus credenciales.', 'error')
         return redirect(url_for("auth_bp.login"))
     
     return render_template('/auth/login.html', form=form)
