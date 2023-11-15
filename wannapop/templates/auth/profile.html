@@ -1,3 +1,4 @@
+<!--Res-->
 {% extends '_auth_template.html' %}
 {% block content %}
 <div class="min-h-screen flex items-center justify-center">
@@ -15,6 +16,8 @@
       <p class="block text-gray-600 font-medium">Rol:</p>
       <p class="w-full border rounded p-2 bg-gray-100">{{ user.role }}</p>
     </div>
+    <!-- Botón para volver a la lista de productos -->
+    <a href="/products/lista" class="block text-blue-600 hover:text-blue-800 font-medium">Volver a la lista de productos</a>
   </div>
 </div>
 {% endblock %}
