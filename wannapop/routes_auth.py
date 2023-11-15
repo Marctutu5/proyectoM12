@@ -66,6 +66,15 @@ def register():
 
     return render_template('/auth/register.html', form=form)
 
+@auth_bp.route("/profile")
+@login_required
+def profile():
+    # Aquí obtendrás la información del usuario autenticado
+    user = current_user  # Supongo que estás utilizando Flask-Login para la gestión de usuarios
+
+    # Renderiza la plantilla de perfil y pasa los datos del usuario a la plantilla
+    return render_template('/auth/profile.html', user=user)
+
 @login_manager.user_loader
 def load_user(email):
     if email is not None:
