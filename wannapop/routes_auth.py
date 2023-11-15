@@ -66,7 +66,6 @@ def register():
 
     return render_template('/auth/register.html', form=form)
 
-
 @login_manager.user_loader
 def load_user(email):
     if email is not None:
