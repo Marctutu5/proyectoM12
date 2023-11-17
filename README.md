@@ -1,5 +1,5 @@
 # 2daw-m12-p1-s0-solution
-
+test
 Proposta de solució de l'sprint 0 del projecte 1 dins del mòdul de projecte (M12) de 2n de DAW.
 
 ## Setup
