@@ -4,9 +4,13 @@
 <div class="container p-4">
     <h3 class="text-4xl font-semibold text-gray-800">Producte {{ product.id }}</h3>
     
+    <!-- Botón "Modificar producte" solo para roles "admin" y "wanner" -->
+    {% if current_user.role in ["admin", "wanner"] %}
     <a href="/products/update/{{ product.id }}" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2">Modificar producte</a>
-
+    
+    <!-- Botón "Esborrar producte" solo para roles "admin" y "wanner" -->
     <a href="/products/delete/{{ product.id }}" class="inline-block bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-2">Esborrar producte</a>
+    {% endif %}
 
     <ul class="mt-4">
         <li class="mb-2">Nom: {{ product.title }}</li>
@@ -15,9 +19,12 @@
         <li class="mb-2">Categoria: {{ category.name }} </li>
     </ul>
 
+    <!-- Agrega la clase "max-w-full h-auto" a la imagen para establecer el tamaño predeterminado -->
     <p class="mt-4"><img src="/static/products/{{ product.photo }}" alt="{{ product.title }}" class="max-w-full h-auto"></p>
 
     <a href="/products/lista" class="mt-4 inline-block bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"> Tornar al llistat de productes</a>
 </div>
 
 {% endblock %}
+
+
