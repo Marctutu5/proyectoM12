@@ -1,0 +1,28 @@
+{% extends '_template.html' %}
+
+{% block content %}
+  <h3 class="text-lg font-semibold mb-4">Users</h3>
+  <div class="overflow-x-auto">
+    <table class="min-w-full table-fixed border-collapse border border-gray-300">
+      <thead>
+        <tr>
+          <th class="w-1/4 px-4 py-2 bg-gray-100 border border-gray-300">ID</th>
+          <th class="w-1/4 px-4 py-2 bg-gray-100 border border-gray-300">NOM</th>
+          <th class="w-1/4 px-4 py-2 bg-gray-100 border border-gray-300">EMAIL</th>
+          <th class="w-1/4 px-4 py-2 bg-gray-100 border border-gray-300">ROL</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+          <tr>
+            <td class="w-1/4 px-4 py-2 border border-gray-300">{{ user.id }}</td>
+            <td class="w-1/4 px-4 py-2 border border-gray-300">{{ user.name }}</td>
+            <td class="w-1/4 px-4 py-2 border border-gray-300">{{ user.email }}</td>
+            <td class="w-1/4 px-4 py-2 border border-gray-300">{{ user.role }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <a href="/admin" class="text-blue-500 hover:text-blue-700">Volver al panel</a>
+  </div>
+{% endblock %}
