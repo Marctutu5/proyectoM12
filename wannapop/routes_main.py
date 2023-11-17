@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from . import db_manager as db
 import uuid
 import os
+from .helper_role import require_admin_role, require_moderator_role, require_create_permission, require_read_permission, require_update_permission, require_delete_permission
 
 # Blueprint
 main_bp = Blueprint(
@@ -21,6 +22,7 @@ def init():
 
 @main_bp.route('/products/lista')
 @login_required
+@require_read_permission.require(http_exception=403)  # Requiere permiso de lectura
 def product_list():
     # select amb join que retorna una llista dwe resultats
     products_with_category = db.session.query(Product, Category).join(Category).order_by(Product.id.asc()).all()
@@ -29,6 +31,7 @@ def product_list():
 
 @main_bp.route('/products/create', methods=['POST', 'GET'])
 @login_required
+@require_create_permission.require(http_exception=403)  # Requiere permiso de creación
 def product_create():
     # select que retorna una llista de resultats
     categories = db.session.query(Category).order_by(Category.id.asc()).all()
@@ -66,6 +69,7 @@ def product_create():
 
 @main_bp.route('/products/read/<int:product_id>')
 @login_required
+@require_read_permission.require(http_exception=403)  # Requiere permiso de lectura
 def product_read(product_id):
     # select amb join i 1 resultat
     (product, category) = db.session.query(Product, Category).join(Category).filter(Product.id == product_id).one()
@@ -74,6 +78,7 @@ def product_read(product_id):
 
 @main_bp.route('/products/update/<int:product_id>',methods = ['POST', 'GET'])
 @login_required
+@require_update_permission.require(http_exception=403)  # Requiere permiso de actualización
 def product_update(product_id):
     # select amb 1 resultat
     product = db.session.query(Product).filter(Product.id == product_id).one()
@@ -106,6 +111,7 @@ def product_update(product_id):
 
 @main_bp.route('/products/delete/<int:product_id>',methods = ['GET', 'POST'])
 @login_required
+@require_delete_permission.require(http_exception=403)  # Requiere permiso de eliminación
 def product_delete(product_id):
     # select amb 1 resultat
     product = db.session.query(Product).filter(Product.id == product_id).one()
@@ -121,9 +127,6 @@ def product_delete(product_id):
     else: # GET
         return render_template('products/delete.html', form = form, product = product)
 
-
-__uploads_folder = os.path.abspath(os.path.dirname(__file__)) + "/static/products/"
-
 def __manage_photo_file(photo_file):
     # si hi ha fitxer
     if photo_file.data:
@@ -137,3 +140,4 @@ def __manage_photo_file(photo_file):
             return unique_filename
 
     return None
+
