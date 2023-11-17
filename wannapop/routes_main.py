@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from . import db_manager as db
 import uuid
 import os
-from .helper_role import require_admin_role, require_moderator_role, require_create_permission, require_read_permission, require_update_permission, require_delete_permission
+from .helper_role import require_admin_role, require_moderator_role, require_create_permission, require_read_permission, require_update_permission, require_delete_permission, Role
 
 # Blueprint
 main_bp = Blueprint(
@@ -80,8 +80,12 @@ def product_read(product_id):
 @login_required
 @require_update_permission.require(http_exception=403)  # Requiere permiso de actualización
 def product_update(product_id):
-    # select amb 1 resultat
     product = db.session.query(Product).filter(Product.id == product_id).one()
+
+    # Check if the current user is the owner of the product
+    if current_user.role == Role.wanner and product.seller_id != current_user.id:
+        flash("No tienes permiso para editar este producto.", "danger")
+        return redirect(url_for('main_bp.product_list'))
 
     # select que retorna una llista de resultats
     categories = db.session.query(Category).order_by(Category.id.asc()).all()
@@ -111,21 +115,26 @@ def product_update(product_id):
 
 @main_bp.route('/products/delete/<int:product_id>',methods = ['GET', 'POST'])
 @login_required
-@require_delete_permission.require(http_exception=403)  # Requiere permiso de eliminación
+@require_delete_permission.require(http_exception=403)
 def product_delete(product_id):
-    # select amb 1 resultat
     product = db.session.query(Product).filter(Product.id == product_id).one()
 
+    # Comprovació de que el user es el creador del product
+    if current_user.role == Role.wanner and product.seller_id != current_user.id:
+        flash("No tienes permiso para eliminar este producto.", "danger")
+        return redirect(url_for('main_bp.product_list'))
+
     form = DeleteForm()
-    if form.validate_on_submit(): # si s'ha fet submit al formulari
-        # delete!
+    if form.validate_on_submit():
         db.session.delete(product)
         db.session.commit()
 
         flash("Producte esborrat", "success")
         return redirect(url_for('main_bp.product_list'))
-    else: # GET
+    else:
         return render_template('products/delete.html', form = form, product = product)
+
+__uploads_folder = os.path.abspath(os.path.dirname(__file__)) + "/static/products/"
 
 def __manage_photo_file(photo_file):
     # si hi ha fitxer
