@@ -2,7 +2,7 @@ from flask import Blueprint, redirect, render_template, url_for, flash
 from flask_login import current_user, login_user, login_required, logout_user
 from . import login_manager, mail_manager  # Importa mail_manager desde tu paquete
 from .models import User
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, RegisterForm, ResendVerificationForm
 from .helper_role import notify_identity_changed
 from . import db_manager as db
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -129,3 +129,23 @@ def unauthorized():
 def logout():
     logout_user()
     return redirect(url_for("auth_bp.login"))
+
+@auth_bp.route("/resend", methods=["GET", "POST"])
+def resend_verification_email():
+    form = ResendVerificationForm()
+
+    if form.validate_on_submit():
+        email = form.email.data
+        user = User.query.filter_by(email=email).first()
+
+        if user and not user.verified:
+            # Aquí puedes colocar la lógica directa para enviar el correo de verificación
+            verification_link = url_for('auth_bp.verify_email', name=user.name, token=user.email_token, _external=True)
+            mail_manager.send_verification_email(user.email, user.name, verification_link)
+
+            flash("Se ha reenviado el correo de verificación. Por favor, revisa tu bandeja de entrada.", "success")
+            return redirect(url_for("auth_bp.login"))
+        else:
+            flash("No se pudo reenviar el correo de verificación. Verifica que la dirección de correo sea correcta o que la cuenta ya esté verificada.", "error")
+
+    return render_template("auth/resend_verification.html", form=form)
