@@ -2,7 +2,7 @@ from flask import Blueprint, redirect, render_template, url_for, flash
 from flask_login import current_user, login_user, login_required, logout_user
 from . import login_manager, mail_manager  # Importa mail_manager desde tu paquete
 from .models import User
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, RegisterForm, ProfileForm
 from .helper_role import notify_identity_changed
 from . import db_manager as db
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -107,11 +107,35 @@ def verify_email(name, token):
         return redirect(url_for('auth_bp.register'))
 
 
-@auth_bp.route("/profile")
+@auth_bp.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
-    user = current_user
-    return render_template('/auth/profile.html', user=user)
+    form = ProfileForm(obj=current_user)
+
+    if form.validate_on_submit():
+        current_user.name = form.name.data
+
+        if current_user.email != form.email.data:
+            # Si el correo electrónico ha cambiado
+            current_user.email = form.email.data
+            current_user.verified = False  # Marca el usuario como no verificado
+            email_token = secrets.token_urlsafe(20)
+            current_user.email_token = email_token
+            verification_link = url_for('auth_bp.verify_email', name=current_user.name, token=email_token, _external=True)
+            mail_manager.send_verification_email(form.email.data, current_user.name, verification_link)
+
+        # Actualiza la contraseña solo si se ha ingresado una nueva
+        if form.password.data:
+            hashed_password = generate_password_hash(form.password.data)
+            current_user.password = hashed_password
+
+        db.session.commit()
+        flash('Perfil actualizado con éxito.', 'success')
+        return redirect(url_for('auth_bp.profile'))
+
+    return render_template('/auth/profile.html', form=form)
+
+
 
 @login_manager.user_loader
 def load_user(email):

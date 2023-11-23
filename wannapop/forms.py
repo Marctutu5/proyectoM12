@@ -45,3 +45,15 @@ class LoginForm(FlaskForm):
         validators=[ DataRequired()]
     )
     submit = SubmitField()
+
+class ProfileForm(FlaskForm):
+    name = StringField(
+        validators=[DataRequired()]
+    )
+    email = StringField(
+        validators=[Email(), DataRequired()]
+    )
+    password = PasswordField(
+        'Nueva Contraseña'
+    )
+    submit = SubmitField()
