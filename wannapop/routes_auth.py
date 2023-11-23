@@ -2,7 +2,7 @@ from flask import Blueprint, redirect, render_template, url_for, flash
 from flask_login import current_user, login_user, login_required, logout_user
 from . import login_manager, mail_manager  # Importa mail_manager desde tu paquete
 from .models import User
-from .forms import LoginForm, RegisterForm, ResendVerificationForm
+from .forms import LoginForm, RegisterForm, ResendVerificationForm, ProfileForm
 from .helper_role import notify_identity_changed
 from . import db_manager as db
 from werkzeug.security import check_password_hash, generate_password_hash
