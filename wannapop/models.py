@@ -24,7 +24,7 @@ class Category(db.Model):
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True, nullable=True)  # Puedes ajustar la columna según tus necesidades
+    name = db.Column(db.String, unique=True, nullable=True)
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)

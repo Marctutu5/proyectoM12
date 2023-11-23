@@ -1,6 +1,6 @@
 from flask import Blueprint, redirect, render_template, url_for, flash
 from flask_login import current_user, login_user, login_required, logout_user
-from . import login_manager, mail_manager  # Importa mail_manager desde tu paquete
+from . import login_manager, mail_manager
 from .models import User
 from .forms import LoginForm, RegisterForm, ResendVerificationForm, ProfileForm
 from .helper_role import notify_identity_changed
@@ -29,7 +29,7 @@ def login():
         # Verifica primero si el usuario existe y la contraseña es correcta
         if user and check_password_hash(user.password, plain_text_password):
             # Si el usuario no ha verificado su correo electrónico
-            if not user.verified:  # Asegúrate de usar 'verified' en lugar de 'email_verified'
+            if not user.verified:
                 flash('Debes verificar tu correo electrónico antes de iniciar sesión. Por favor, revisa tu correo electrónico y haz clic en el enlace de verificación.', 'warning')
                 return redirect(url_for("auth_bp.login"))
 
@@ -96,8 +96,8 @@ def register():
 @auth_bp.route("/verify_email/<name>/<token>")
 def verify_email(name, token):
     user = User.query.filter_by(email_token=token).first()
-    if user and user.name == name:  # Asegúrate de que tanto el token como el nombre coincidan
-        user.verified = True  # Cambia 'email_verified' a 'verified' según tu modelo
+    if user and user.name == name:
+        user.verified = True
         db.session.commit()
         flash('Tu cuenta ha sido verificada. Ahora puedes iniciar sesión.', 'success')
         return redirect(url_for('auth_bp.login'))
@@ -163,7 +163,6 @@ def resend_verification_email():
         user = User.query.filter_by(email=email).first()
 
         if user and not user.verified:
-            # Aquí puedes colocar la lógica directa para enviar el correo de verificación
             verification_link = url_for('auth_bp.verify_email', name=user.name, token=user.email_token, _external=True)
             mail_manager.send_verification_email(user.email, user.name, verification_link)
 

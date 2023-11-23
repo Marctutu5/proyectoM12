@@ -94,7 +94,7 @@ def product_update(product_id):
     form = ProductForm(obj = product)
     form.category_id.choices = [(category.id, category.name) for category in categories]
 
-    if form.validate_on_submit(): # si s'ha fet submit al formulari
+    if form.validate_on_submit():
         # dades del formulari a l'objecte product
         form.populate_obj(product)
 
