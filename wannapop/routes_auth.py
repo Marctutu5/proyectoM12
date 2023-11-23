@@ -23,17 +23,29 @@ def login():
         email = form.email.data
         plain_text_password = form.password.data
 
+        # Cargar el usuario basado en el correo electrónico
         user = load_user(email)
+
+        # Verifica primero si el usuario existe y la contraseña es correcta
         if user and check_password_hash(user.password, plain_text_password):
+            # Si el usuario no ha verificado su correo electrónico
+            if not user.verified:  # Asegúrate de usar 'verified' en lugar de 'email_verified'
+                flash('Debes verificar tu correo electrónico antes de iniciar sesión. Por favor, revisa tu correo electrónico y haz clic en el enlace de verificación.', 'warning')
+                return redirect(url_for("auth_bp.login"))
+
+            # Iniciar sesión y redirigir si el usuario está verificado
             login_user(user)
             notify_identity_changed()
             flash('Inicio de sesión exitoso', 'success')
             return redirect(url_for("main_bp.init"))
 
+        # Si las credenciales no son correctas
         flash('Login Incorrecto. Por favor revisa tus credenciales.', 'error')
         return redirect(url_for("auth_bp.login"))
     
     return render_template('/auth/login.html', form=form)
+
+
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
@@ -70,7 +82,7 @@ def register():
         db.session.commit()
 
         # Envía un correo electrónico con el enlace de verificación.
-        verification_link = url_for('auth_bp.verify_email', token=email_token, _external=True)
+        verification_link = url_for('auth_bp.verify_email', name=name, token=email_token, _external=True)
         mail_manager.send_verification_email(email, name, verification_link)
 
         # Muestra un mensaje de éxito y redirige a la página de inicio de sesión.
@@ -81,17 +93,19 @@ def register():
     return render_template('/auth/register.html', form=form)
 
 
-@auth_bp.route("/verify_email/<token>")
-def verify_email(token):
+@auth_bp.route("/verify_email/<name>/<token>")
+def verify_email(name, token):
     user = User.query.filter_by(email_token=token).first()
-    if user:
-        user.email_verified = True
+    if user and user.name == name:  # Asegúrate de que tanto el token como el nombre coincidan
+        user.verified = True  # Cambia 'email_verified' a 'verified' según tu modelo
         db.session.commit()
         flash('Tu cuenta ha sido verificada. Ahora puedes iniciar sesión.', 'success')
         return redirect(url_for('auth_bp.login'))
     else:
-        flash('El enlace de verificación no es válido o ha expirado.', 'error')
+        # Si el token no es válido o el nombre no coincide
+        flash('El enlace de verificación no es válido o ha expirado, o el nombre de usuario no coincide.', 'error')
         return redirect(url_for('auth_bp.register'))
+
 
 @auth_bp.route("/profile")
 @login_required
