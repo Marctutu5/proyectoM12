@@ -1,11 +1,12 @@
 from flask import Blueprint, redirect, render_template, url_for, flash
 from flask_login import current_user, login_user, login_required, logout_user
-from . import login_manager
+from . import login_manager, mail_manager  # Importa mail_manager desde tu paquete
 from .models import User
 from .forms import LoginForm, RegisterForm
 from .helper_role import notify_identity_changed
 from . import db_manager as db
 from werkzeug.security import check_password_hash, generate_password_hash
+import secrets
 
 # Blueprint
 auth_bp = Blueprint(
@@ -14,74 +15,93 @@ auth_bp = Blueprint(
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    # Si ya está autenticado, redirige a donde desees (en este caso, "main_bp.lista")
     if current_user.is_authenticated:
         return redirect(url_for("main_bp.init"))
 
     form = LoginForm()
-    if form.validate_on_submit(): # si se ha enviado el formulario via POST y es correcto
+    if form.validate_on_submit():
         email = form.email.data
         plain_text_password = form.password.data
 
         user = load_user(email)
         if user and check_password_hash(user.password, plain_text_password):
-            # aquí se crea la cookie y se inicia sesión
             login_user(user)
-            # verifica identidad
             notify_identity_changed()
             flash('Inicio de sesión exitoso', 'success')
             return redirect(url_for("main_bp.init"))
 
-        # si llega aquí, es que no se ha autenticado correctamente
-        flash('Login Incorrecto. Porfavor revisa tus credenciales.', 'error')
+        flash('Login Incorrecto. Por favor revisa tus credenciales.', 'error')
         return redirect(url_for("auth_bp.login"))
     
     return render_template('/auth/login.html', form=form)
 
-
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
-    # Si ya está autenticado, redirige a donde desees
     if current_user.is_authenticated:
+        # Si el usuario actual ya está autenticado, redirige a la página principal.
         return redirect(url_for("main_bp.init"))
 
     form = RegisterForm()
-    if form.validate_on_submit():  # si se ha enviado el formulario via POST y es correcto
+    if form.validate_on_submit():
+        # Extrae los datos del formulario.
         name = form.name.data
         email = form.email.data
         plain_text_password = form.password.data
 
-        # Verificar si ya existe un usuario con ese email
+        # Comprueba si ya existe un usuario con ese email.
         user = User.query.filter_by(email=email).first()
         if user:
+            # Si el usuario ya existe, muestra un mensaje y redirige al formulario de registro.
             flash('Ya existe una cuenta con este correo electrónico.', 'error')
             return redirect(url_for('auth_bp.register'))
 
-        # Crear un nuevo usuario
+        # Si el usuario no existe, crea uno nuevo.
         hashed_password = generate_password_hash(plain_text_password)
-        new_user = User(name=name, email=email, password=hashed_password, role="wanner")
+        email_token = secrets.token_urlsafe(20)  # Genera un token seguro para el email.
 
+        new_user = User(
+            name=name, 
+            email=email, 
+            password=hashed_password, 
+            role="wanner",
+            email_token=email_token  # Guarda el token en el usuario.
+        )
         db.session.add(new_user)
         db.session.commit()
 
-        flash('Registro exitoso. Ahora puedes iniciar sesión.', 'success')
+        # Envía un correo electrónico con el enlace de verificación.
+        verification_link = url_for('auth_bp.verify_email', token=email_token, _external=True)
+        mail_manager.send_verification_email(email, name, verification_link)
+
+        # Muestra un mensaje de éxito y redirige a la página de inicio de sesión.
+        flash('Registro exitoso. Revisa tu correo electrónico para verificar tu cuenta.', 'success')
         return redirect(url_for('auth_bp.login'))
 
+    # Si el formulario no se ha enviado o no es válido, muestra el formulario de registro.
     return render_template('/auth/register.html', form=form)
+
+
+@auth_bp.route("/verify_email/<token>")
+def verify_email(token):
+    user = User.query.filter_by(email_token=token).first()
+    if user:
+        user.email_verified = True
+        db.session.commit()
+        flash('Tu cuenta ha sido verificada. Ahora puedes iniciar sesión.', 'success')
+        return redirect(url_for('auth_bp.login'))
+    else:
+        flash('El enlace de verificación no es válido o ha expirado.', 'error')
+        return redirect(url_for('auth_bp.register'))
 
 @auth_bp.route("/profile")
 @login_required
 def profile():
-    # Aquí obtendrás la información del usuario autenticado
-    user = current_user  # Supongo que estás utilizando Flask-Login para la gestión de usuarios
-
-    # Renderiza la plantilla de perfil y pasa los datos del usuario a la plantilla
+    user = current_user
     return render_template('/auth/profile.html', user=user)
 
 @login_manager.user_loader
 def load_user(email):
     if email is not None:
-        # select amb 1 resultat o cap
         user_or_none = db.session.query(User).filter(User.email == email).one_or_none()
         return user_or_none
     return None

@@ -30,6 +30,8 @@ class User(UserMixin, db.Model):
     created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     role = db.Column(db.String) 
+    email_token = db.Column(db.String(255), nullable=True)
+    verified = db.Column(db.Boolean, default=False)
 
     def get_id(self):
         return self.email
