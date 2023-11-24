@@ -20,7 +20,10 @@
         {{ form.password.label(class="block text-gray-600 font-medium") }}
         {{ form.password(class="w-full border rounded p-2") }}
       </div>
-
+      <div class="mb-4">
+        <p class="block text-gray-600 font-medium">Rol:</p>
+        <p class="w-full border rounded p-2 bg-gray-100">{{ current_user.role }}</p>
+      </div>
       <div class="flex items-center justify-between">
         {{ form.submit(class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer") }}
         <a href="/products/lista" class="text-blue-600 hover:text-blue-800 font-medium">Cancelar</a>
