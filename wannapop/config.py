@@ -23,3 +23,7 @@ MAIL_SMTP_PORT="587"
 
 CONTACT_ADDR="matuvi@fp.insjoaquimmir.cat"
 EXTERNAL_URL="http://127.0.0.1:5000"
+
+# DEBUG TOOLBAR
+DEBUG = True
+DEBUG_TB_INTERCEPT_REDIRECTS = False
