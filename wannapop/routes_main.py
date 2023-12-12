@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import current_user, login_required
-from .models import Product, Category
+from .models import Product, Category, BlockedUser
 from .forms import ProductForm, DeleteForm
 from werkzeug.utils import secure_filename
 from . import db_manager as db
@@ -33,13 +33,16 @@ def product_list():
 @login_required
 @require_create_permission.require(http_exception=403)  # Requiere permiso de creación
 def product_create():
+    if BlockedUser.query.filter_by(user_id=current_user.id).first():
+        flash("No puedes crear productos porque tu cuenta está bloqueada.", "error")
+        return redirect(url_for('main_bp.product_list'))  # Redirige a la lista de productos
     # select que retorna una llista de resultats
     categories = db.session.query(Category).order_by(Category.id.asc()).all()
 
     # carrego el formulari amb l'objecte products
     form = ProductForm()
     form.category_id.choices = [(category.id, category.name) for category in categories]
-
+    
     if form.validate_on_submit():  # si s'ha fet submit al formulari
         new_product = Product()
         

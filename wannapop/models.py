@@ -35,3 +35,9 @@ class User(UserMixin, db.Model):
 
     def get_id(self):
         return self.email
+
+class BlockedUser(db.Model):
+    __tablename__ = "blocked_users"
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    message = db.Column(db.String(255))
+    created = db.Column(db.DateTime, default=datetime.utcnow)

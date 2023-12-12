@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import PasswordField, StringField, DecimalField, SubmitField, SelectField, FileField
-from wtforms.validators import DataRequired, NumberRange, InputRequired, Email
+from wtforms import PasswordField, StringField, DecimalField, SubmitField, SelectField, FileField, TextAreaField
+from wtforms.validators import DataRequired, NumberRange, InputRequired, Email, Length
 import decimal
 
 class RegisterForm(FlaskForm):
@@ -64,3 +64,15 @@ class ProfileForm(FlaskForm):
         'Nueva Contraseña'
     )
     submit = SubmitField()
+
+class UserBlockForm(FlaskForm):
+    user_id = SelectField(
+        "Usuari", 
+        coerce=int,  # Assegura que el valor sigui un enter
+        validators=[DataRequired()]
+    )
+    message = TextAreaField(
+        "Raó del Bloqueig",
+        validators=[DataRequired(), Length(max=255)]  # Limita la longitud del missatge
+    )
+    submit = SubmitField("Enviar")

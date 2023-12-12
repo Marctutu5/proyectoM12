@@ -1,7 +1,7 @@
 from flask import Blueprint, redirect, render_template, url_for, flash
 from flask_login import current_user, login_user, login_required, logout_user
 from . import login_manager, mail_manager
-from .models import User
+from .models import User, BlockedUser
 from .forms import LoginForm, RegisterForm, ResendVerificationForm, ProfileForm
 from .helper_role import notify_identity_changed
 from . import db_manager as db
@@ -111,6 +111,7 @@ def verify_email(name, token):
 @login_required
 def profile():
     form = ProfileForm(obj=current_user)
+    blocked = BlockedUser.query.filter_by(user_id=current_user.id).first()
 
     if form.validate_on_submit():
         current_user.name = form.name.data
@@ -133,7 +134,7 @@ def profile():
         flash('Perfil actualizado con éxito.', 'success')
         return redirect(url_for('auth_bp.profile'))
 
-    return render_template('/auth/profile.html', form=form)
+    return render_template('/auth/profile.html', form=form, blocked=blocked)
 
 
 
