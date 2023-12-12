@@ -6,6 +6,9 @@ from .helper_mail import MailManager
 from werkzeug.local import LocalProxy
 from flask import current_app
 from flask_debugtoolbar import DebugToolbarExtension
+from logging.handlers import RotatingFileHandler
+import logging
+
 
 # https://stackoverflow.com/a/31764294
 logger = LocalProxy(lambda: current_app.logger)
@@ -20,6 +23,21 @@ def create_app():
     # Construct the core app object
     app = Flask(__name__)
     app.config.from_pyfile("config.py")
+
+    # Configurar RotatingFileHandler
+    log_handler = RotatingFileHandler('app.log', maxBytes=10240, backupCount=3)
+    log_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s '
+        '[in %(pathname)s:%(lineno)d]'
+    ))
+    log_level = app.config.get("LOG_LEVEL", "DEBUG").upper()
+    log_handler.setLevel(getattr(logging, log_level))
+    app.logger.addHandler(log_handler)
+
+    # Configurar el nivel de registro del logger de la aplicación
+    if log_level not in ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']:
+        raise ValueError('Nivel de registro no válido')
+    app.logger.setLevel(getattr(logging, log_level))
 
     # Inicializa los plugins
     login_manager.init_app(app)
