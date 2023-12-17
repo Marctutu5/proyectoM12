@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import current_user, login_required
-from .models import Product, Category, BlockedUser
-from .forms import ProductForm, DeleteForm
+from .models import Product, Category, BlockedUser, BannedProduct
+from .forms import ProductForm, DeleteForm, ProductBannedForm
 from werkzeug.utils import secure_filename
 from . import db_manager as db
 import uuid
@@ -24,10 +24,19 @@ def init():
 @login_required
 @require_read_permission.require(http_exception=403)  # Requiere permiso de lectura
 def product_list():
+    # Obtener el usuario actual
+    current_user_id = current_user.id if current_user.is_authenticated else None
+
     # select amb join que retorna una llista dwe resultats
     products_with_category = db.session.query(Product, Category).join(Category).order_by(Product.id.asc()).all()
-    
-    return render_template('products/list.html', products_with_category = products_with_category)
+
+    # Obtener el estado de prohibición para cada producto
+    banned_dict = {}
+    for product, category in products_with_category:
+        banned = BannedProduct.query.filter_by(product_id=product.id).first()
+        banned_dict[product.id] = banned
+
+    return render_template('products/list.html', banned_dict=banned_dict, products_with_category=products_with_category, current_user_id=current_user_id)
 
 @main_bp.route('/products/create', methods=['POST', 'GET'])
 @login_required

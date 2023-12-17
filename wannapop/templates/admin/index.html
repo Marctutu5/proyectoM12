@@ -1,18 +1,21 @@
 {% extends '_template.html' %}
 
 {% block content %}
-  <h1 class="text-2xl font-bold mb-4">Editors Zone</h1>
-  <h2 class="text-lg font-semibold mb-2">Restricted Area</h2>
+  <h1 class="text-2xl font-bold mb-4">Zona de Editores</h1>
+  <h2 class="text-lg font-semibold mb-2">Área Restringida</h2>
   
   <div class="mt-4"> 
-  {% if current_user.role == "admin" %}
-    <a href="/admin/users" class="mt-4 inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md">Mostrar Usuaris</a>
-  {% endif %}
-  <a href="/products/lista" style="background: black;" class="mt-4 inline-block bg-black-500 hover:bg-black-700 text-white font-bold py-2 px-4 rounded shadow-md">Volver a la lista</a>
+    <!-- Botón para administradores -->
+    {% if current_user.role == "admin" %}
+      <a href="/admin/users" class="mt-4 inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md">Mostrar Usuarios</a>
+    {% endif %}
+
+    <!-- Botón para moderadores -->
+    {% if current_user.role == "moderator" %}
+      <a href="/admin/products" class="mt-4 inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md">Mostrar Productos</a>
+    {% endif %}
+
+    <!-- Botón para volver a la lista de productos -->
+    <a href="/products/lista" style="background: black;" class="mt-4 inline-block bg-black-500 hover:bg-black-700 text-white font-bold py-2 px-4 rounded shadow-md">Volver a la lista</a>
   </div>
-</div>
 {% endblock %}
-
-
-
-

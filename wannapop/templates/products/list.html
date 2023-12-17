@@ -15,19 +15,29 @@
     </tr>
 
     {% for (product, category) in products_with_category %}
-    <tr class="border-b">
-        <!-- ID del producto -->
-        <td class="px-4 py-2 border text-center"><a href="/products/read/{{ product.id }}" class="text-blue-600 hover:text-blue-800">{{ product.id }}</a></td>
+        {% set banned = banned_dict.get(product.id) %}
+        {% set is_author = current_user_id == product.seller_id %}
+        {% if banned and is_author %}
+            <!-- Mostrar mensaje de prohibición para el autor del producto -->
+            <tr class="border-b">
+                <td colspan="4" class="px-4 py-2 border text-center text-red-600">Este producto está prohibido. Razón: {{ banned.reason }}</td>
+            </tr>
+        {% elif not banned %}
+            <!-- Mostrar el producto si no está prohibido -->
+            <tr class="border-b">
+                <!-- ID del producto -->
+                <td class="px-4 py-2 border text-center"><a href="/products/read/{{ product.id }}" class="text-blue-600 hover:text-blue-800">{{ product.id }}</a></td>
 
-        <!-- Nombre del producto -->
-        <td class="px-4 py-2 border text-center"><a href="/products/read/{{ product.id }}" class="text-blue-600 hover:text-blue-800">{{ product.title }}</a></td>
+                <!-- Nombre del producto -->
+                <td class="px-4 py-2 border text-center"><a href="/products/read/{{ product.id }}" class="text-blue-600 hover:text-blue-800">{{ product.title }}</a></td>
 
-        <!-- Precio del producto -->
-        <td class="px-4 py-2 border text-center"><a href="/products/read/{{ product.id }}" class="text-blue-600 hover:text-blue-800">{{ product.price }}</a></td>
+                <!-- Precio del producto -->
+                <td class="px-4 py-2 border text-center"><a href="/products/read/{{ product.id }}" class="text-blue-600 hover:text-blue-800">{{ product.price }}</a></td>
 
-        <!-- Nombre de la categoría -->
-        <td class="px-4 py-2 border text-center"><a href="/products/read/{{ product.id }}" class="text-blue-600 hover:text-blue-800">{{ category.name }}</a></td>
-    </tr>
+                <!-- Nombre de la categoría -->
+                <td class="px-4 py-2 border text-center"><a href="/products/read/{{ product.id }}" class="text-blue-600 hover:text-blue-800">{{ category.name }}</a></td>
+            </tr>
+        {% endif %}
     {% endfor %}
 </table>
 <a href="/products/create" class="mt-4 inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Crear un nou producte</a>
