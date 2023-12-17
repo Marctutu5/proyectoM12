@@ -76,3 +76,15 @@ class UserBlockForm(FlaskForm):
         validators=[DataRequired(), Length(max=255)]  # Limita la longitud del missatge
     )
     submit = SubmitField("Enviar")
+
+class ProductBannedForm(FlaskForm):
+    product_id = SelectField(
+        "Product", 
+        coerce=int,  # Assegura que el valor sigui un enter
+        validators=[DataRequired()]
+    )
+    reason = TextAreaField(
+        "Razón de la Prohibición",
+        validators=[DataRequired(), Length(max=255)]
+    )
+    submit = SubmitField("Enviar")
