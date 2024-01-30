@@ -46,7 +46,6 @@ def login():
     return render_template('/auth/login.html', form=form)
 
 
-
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
@@ -61,8 +60,8 @@ def register():
         plain_text_password = form.password.data
 
         # Comprueba si ya existe un usuario con ese email.
-        user = User.query.filter_by(email=email).first()
-        if user:
+        existing_user = User.get_filtered_by(email=email)
+        if existing_user:
             # Si el usuario ya existe, muestra un mensaje y redirige al formulario de registro.
             flash('Ya existe una cuenta con este correo electrónico.', 'error')
             return redirect(url_for('auth_bp.register'))
@@ -71,23 +70,25 @@ def register():
         hashed_password = generate_password_hash(plain_text_password)
         email_token = secrets.token_urlsafe(20)  # Genera un token seguro para el email.
 
-        new_user = User(
-            name=name, 
-            email=email, 
-            password=hashed_password, 
+        # Crear un nuevo usuario usando el método create del BaseMixin
+        new_user = User.create(
+            name=name,
+            email=email,
+            password=hashed_password,
             role="wanner",
-            email_token=email_token  # Guarda el token en el usuario.
+            email_token=email_token
         )
-        db.session.add(new_user)
-        db.session.commit()
 
-        # Envía un correo electrónico con el enlace de verificación.
-        verification_link = url_for('auth_bp.verify_email', name=name, token=email_token, _external=True)
-        mail_manager.send_verification_email(email, name, verification_link)
+        if new_user:
+            # Envía un correo electrónico con el enlace de verificación.
+            verification_link = url_for('auth_bp.verify_email', name=name, token=email_token, _external=True)
+            mail_manager.send_verification_email(email, name, verification_link)
 
-        # Muestra un mensaje de éxito y redirige a la página de inicio de sesión.
-        flash('Registro exitoso. Revisa tu correo electrónico para verificar tu cuenta.', 'success')
-        return redirect(url_for('auth_bp.login'))
+            # Muestra un mensaje de éxito y redirige a la página de inicio de sesión.
+            flash('Registro exitoso. Revisa tu correo electrónico para verificar tu cuenta.', 'success')
+            return redirect(url_for('auth_bp.login'))
+        else:
+            flash('Error al crear el usuario.', 'error')
 
     # Si el formulario no se ha enviado o no es válido, muestra el formulario de registro.
     return render_template('/auth/register.html', form=form)
@@ -95,14 +96,13 @@ def register():
 
 @auth_bp.route("/verify_email/<name>/<token>")
 def verify_email(name, token):
-    user = User.query.filter_by(email_token=token).first()
-    if user and user.name == name:
+    user = User.get_filtered_by(email_token=token, name=name)
+    if user:
         user.verified = True
-        db.session.commit()
+        user.update()
         flash('Tu cuenta ha sido verificada. Ahora puedes iniciar sesión.', 'success')
         return redirect(url_for('auth_bp.login'))
     else:
-        # Si el token no es válido o el nombre no coincide
         flash('El enlace de verificación no es válido o ha expirado, o el nombre de usuario no coincide.', 'error')
         return redirect(url_for('auth_bp.register'))
 
@@ -114,23 +114,27 @@ def profile():
     blocked = BlockedUser.query.filter_by(user_id=current_user.id).first()
 
     if form.validate_on_submit():
-        current_user.name = form.name.data
+        # Preparar los datos a actualizar
+        update_data = {'name': form.name.data}
 
+        # Verificar si el correo electrónico ha cambiado
         if current_user.email != form.email.data:
-            # Si el correo electrónico ha cambiado
-            current_user.email = form.email.data
-            current_user.verified = False  # Marca el usuario como no verificado
             email_token = secrets.token_urlsafe(20)
-            current_user.email_token = email_token
             verification_link = url_for('auth_bp.verify_email', name=current_user.name, token=email_token, _external=True)
             mail_manager.send_verification_email(form.email.data, current_user.name, verification_link)
 
-        # Actualiza la contraseña solo si se ha ingresado una nueva
+            update_data['email'] = form.email.data
+            update_data['verified'] = False
+            update_data['email_token'] = email_token
+
+        # Actualizar la contraseña si se ha ingresado una nueva
         if form.password.data:
             hashed_password = generate_password_hash(form.password.data)
-            current_user.password = hashed_password
+            update_data['password'] = hashed_password
 
-        db.session.commit()
+        # Utilizar el método update del BaseMixin
+        current_user.update(**update_data)
+
         flash('Perfil actualizado con éxito.', 'success')
         return redirect(url_for('auth_bp.profile'))
 
@@ -161,7 +165,7 @@ def resend_verification_email():
 
     if form.validate_on_submit():
         email = form.email.data
-        user = User.query.filter_by(email=email).first()
+        user = User.get_filtered_by(email=email)
 
         if user and not user.verified:
             verification_link = url_for('auth_bp.verify_email', name=user.name, token=user.email_token, _external=True)

@@ -21,7 +21,7 @@ def admin_index():
 @login_required
 @require_admin_role.require(http_exception=403)
 def admin_users():
-    users = User.query.all()
+    users = User.get_all()
     for user in users:
         user.is_blocked = BlockedUser.query.filter_by(user_id=user.id).first() is not None
     return render_template('users_list.html', users=users)
@@ -42,19 +42,15 @@ def admin_products():
     return render_template('products_list.html', products_info=products_info)
 
 
-
 @admin_bp.route('/admin/users/<int:user_id>/block', methods=['POST'])
 @login_required
 @require_admin_role.require(http_exception=403)
 def block_user(user_id):
-    user = User.query.get_or_404(user_id)
-    if BlockedUser.query.get(user_id):
+    if BlockedUser.get_filtered_by(user_id=user_id):
         flash('El usuario ya está bloqueado', 'warning')
     else:
-        message = request.form.get('message', 'Sin razón especificada')  # Obtener el mensaje del formulario
-        blocked_user = BlockedUser(user_id=user_id, message=message, created=datetime.utcnow())
-        db.session.add(blocked_user)
-        db.session.commit()
+        message = request.form.get('message', 'Sin razón especificada')
+        BlockedUser.create(user_id=user_id, message=message, created=datetime.utcnow())
         flash('Usuario bloqueado con éxito', 'success')
     return redirect(url_for('admin_bp.admin_users'))
 
@@ -63,10 +59,14 @@ def block_user(user_id):
 @login_required
 @require_admin_role.require(http_exception=403)
 def unblock_user(user_id):
-    BlockedUser.query.filter_by(user_id=user_id).delete()
-    db.session.commit()
-    flash('Usuario desbloqueado con éxito', 'success')
+    blocked_user = BlockedUser.get_filtered_by(user_id=user_id)
+    if blocked_user:
+        blocked_user.delete()
+        flash('Usuario desbloqueado con éxito', 'success')
+    else:
+        flash('El usuario no está bloqueado', 'warning')
     return redirect(url_for('admin_bp.admin_users'))
+
 
 @admin_bp.route('/admin/products/<int:product_id>/ban', methods=['POST'])
 @login_required
