@@ -48,6 +48,7 @@ def create_app():
 
     with app.app_context():
         from . import routes_main, routes_auth, routes_admin
+        from .api import api_bp
 
         # Registra los blueprints
         app.register_blueprint(routes_main.main_bp)
