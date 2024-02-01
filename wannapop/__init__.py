@@ -54,6 +54,9 @@ def create_app():
         app.register_blueprint(routes_auth.auth_bp)
         app.register_blueprint(routes_admin.admin_bp)
 
+        # Registra el blueprint de l'API
+        app.register_blueprint(api_bp, url_prefix='/api/v1.0')
+
     app.logger.info("Aplicación iniciada")
 
     return app
