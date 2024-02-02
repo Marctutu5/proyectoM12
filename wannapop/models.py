@@ -48,3 +48,23 @@ class BannedProduct(BaseMixin, SerializableMixin, db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), primary_key=True)
     reason = db.Column(db.String(255))
     created = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Order(BaseMixin, SerializableMixin, db.Model):
+    __tablename__ = "orders"
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
+    buyer_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    offer = db.Column(db.Numeric(precision=10, scale=2), nullable=False)  # Ajusta según necesidad
+    created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    # Relaciones
+    product = db.relationship("Product", backref=db.backref("orders", lazy=True))
+    buyer = db.relationship("User", backref=db.backref("orders", lazy=True))
+
+class ConfirmedOrder(BaseMixin, SerializableMixin, db.Model):
+    __tablename__ = "confirmed_orders"
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), primary_key=True)
+    created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    # Relación
+    order = db.relationship("Order", backref=db.backref("confirmation", uselist=False, lazy=True))
