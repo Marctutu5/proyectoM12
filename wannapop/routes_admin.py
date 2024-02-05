@@ -31,15 +31,16 @@ def admin_users():
 @require_moderator_role.require(http_exception=403)
 def admin_products():
     # Obtener la lista de productos y sus categorías
-    products_with_category = db.session.query(Product, Category).join(Category).order_by(Product.id.asc()).all()
+    # products_with_category = db.session.query(Product, Category).join(Category).order_by(Product.id.asc()).all()
+    products_with_category = Product.get_all_with(Category, BannedProduct)
 
     # Obtener también el estado de prohibición para cada producto
-    products_info = []
-    for product, category in products_with_category:
-        banned = BannedProduct.query.filter_by(product_id=product.id).first()
-        products_info.append((product, category, banned))
+    # products_info = []
+    # for product, category in products_with_category:
+    #     banned = BannedProduct.query.filter_by(product_id=product.id).first()
+    #     products_info.append((product, category, banned))
 
-    return render_template('products_list.html', products_info=products_info)
+    return render_template('products_list.html', products_info=products_with_category)
 
 
 @admin_bp.route('/admin/users/<int:user_id>/block', methods=['POST'])
@@ -72,34 +73,25 @@ def unblock_user(user_id):
 @login_required
 @require_moderator_role.require(http_exception=403)
 def ban_product(product_id):
-    # Obtén la razón de la solicitud, si está presente
     reason = request.form.get('reason', 'No especificada')
 
-    # Verifica si el producto ya está prohibido
-    banned_product = BannedProduct.query.filter_by(product_id=product_id).first()
-    if banned_product:
+    # Try to ban the product, and handle the result
+    if BannedProduct.create(product_id=product_id, reason=reason):
+        flash('Producto prohibido con éxito', 'success')
+    else:
         flash('Este producto ya está prohibido', 'warning')
-        return redirect(url_for('admin_bp.admin_products'))
 
-    # Prohibir el producto
-    new_ban = BannedProduct(product_id=product_id, reason=reason)
-    db.session.add(new_ban)
-    db.session.commit()
-    flash('Producto prohibido con éxito', 'success')
     return redirect(url_for('admin_bp.admin_products'))
 
 @admin_bp.route('/admin/products/<int:product_id>/unban', methods=['POST'])
 @login_required
 @require_moderator_role.require(http_exception=403)
 def unban_product(product_id):
-    # Encuentra el producto prohibido
-    banned_product = BannedProduct.query.filter_by(product_id=product_id).first()
-    if not banned_product:
-        flash('Este producto no está prohibido', 'warning')
-        return redirect(url_for('admin_bp.admin_products'))
+    banned_product = BannedProduct.get(product_id)
 
-    # Elimina la prohibición del producto
-    db.session.delete(banned_product)
-    db.session.commit()
-    flash('Prohibición del producto retirada', 'success')
+    if banned_product and banned_product.delete():
+        flash('Prohibición del producto retirada', 'success')
+    else:
+        flash('Este producto no está prohibido', 'warning')
+
     return redirect(url_for('admin_bp.admin_products'))

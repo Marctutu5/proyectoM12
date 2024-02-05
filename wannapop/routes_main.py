@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_required
 from .models import Product, Category, BlockedUser, BannedProduct
 from .forms import ProductForm, DeleteForm, ProductBannedForm
@@ -22,131 +22,120 @@ def init():
 
 @main_bp.route('/products/lista')
 @login_required
-@require_read_permission.require(http_exception=403)  # Requiere permiso de lectura
+@require_read_permission.require(http_exception=403)
 def product_list():
-    # Obtener el usuario actual
     current_user_id = current_user.id if current_user.is_authenticated else None
 
-    # select amb join que retorna una llista dwe resultats
-    products_with_category = db.session.query(Product, Category).join(Category).order_by(Product.id.asc()).all()
+    # Fetch products with categories using get_all_with method
+    products_with_category_and_ban = Product.get_all_with(Category, BannedProduct)
 
-    # Obtener el estado de prohibición para cada producto
-    banned_dict = {}
-    for product, category in products_with_category:
-        banned = BannedProduct.query.filter_by(product_id=product.id).first()
-        banned_dict[product.id] = banned
-
-    return render_template('products/list.html', banned_dict=banned_dict, products_with_category=products_with_category, current_user_id=current_user_id)
+    # Render the template with the product information
+    return render_template('products/list.html', products_with_category_and_ban=products_with_category_and_ban, current_user_id=current_user_id)
 
 @main_bp.route('/products/create', methods=['POST', 'GET'])
 @login_required
-@require_create_permission.require(http_exception=403)  # Requiere permiso de creación
+@require_create_permission.require(http_exception=403)
 def product_create():
     if BlockedUser.query.filter_by(user_id=current_user.id).first():
         flash("No puedes crear productos porque tu cuenta está bloqueada.", "error")
-        return redirect(url_for('main_bp.product_list'))  # Redirige a la lista de productos
-    # select que retorna una llista de resultats
-    categories = db.session.query(Category).order_by(Category.id.asc()).all()
+        return redirect(url_for('main_bp.product_list'))
 
-    # carrego el formulari amb l'objecte products
+    categories = Category.get_all()
+
     form = ProductForm()
     form.category_id.choices = [(category.id, category.name) for category in categories]
-    
-    if form.validate_on_submit():  # si s'ha fet submit al formulari
+
+    if request.method == 'POST' and form.validate_on_submit():
         new_product = Product()
-        
-        # Asigna el seller_id utilizando el ID del usuario autenticado
         new_product.seller_id = current_user.id
 
-        # dades del formulari a l'objecte product
         form.populate_obj(new_product)
 
-        # si hi ha foto
-        filename = __manage_photo_file(form.photo_file)
-        if filename:
-            new_product.photo = filename
-        else:
-            new_product.photo = "no_image.png"
+        # handle photo upload here
 
-        # insert!
-        db.session.add(new_product)
-        db.session.commit()
+        new_product.save()
 
-        # https://en.wikipedia.org/wiki/Post/Redirect/Get
         flash("Nou producte creat", "success")
         return redirect(url_for('main_bp.product_list'))
-    else:  # GET
-        return render_template('products/create.html', form=form)
+
+    return render_template('products/create.html', form=form)
 
 
 @main_bp.route('/products/read/<int:product_id>')
 @login_required
-@require_read_permission.require(http_exception=403)  # Requiere permiso de lectura
+@require_read_permission.require(http_exception=403)
 def product_read(product_id):
-    # select amb join i 1 resultat
-    (product, category) = db.session.query(Product, Category).join(Category).filter(Product.id == product_id).one()
-    
-    return render_template('products/read.html', product = product, category = category)
+    try:
+        # Query the database to get product details with join
+        product, category = Product.get_with(product_id, Category)
+        
+        if not product:
+            flash("Product not found", "error")
+            return redirect(url_for('main_bp.product_list'))
 
-@main_bp.route('/products/update/<int:product_id>',methods = ['POST', 'GET'])
-@login_required
-@require_update_permission.require(http_exception=403)  # Requiere permiso de actualización
-def product_update(product_id):
-    product = db.session.query(Product).filter(Product.id == product_id).one()
-
-    # Check if the current user is the owner of the product
-    if current_user.role == Role.wanner and product.seller_id != current_user.id:
-        flash("No tienes permiso para editar este producto.", "danger")
+        return render_template('products/read.html', product=product, category=category)
+    except Exception as e:
+        flash(f"Error fetching product details: {str(e)}", "error")
         return redirect(url_for('main_bp.product_list'))
 
-    # select que retorna una llista de resultats
-    categories = db.session.query(Category).order_by(Category.id.asc()).all()
+@main_bp.route('/products/update/<int:product_id>', methods=['POST', 'GET'])
+@login_required
+@require_update_permission.require(http_exception=403)
+def product_update(product_id):
+    try:
+        product = Product.get(product_id)
 
-    # carrego el formulari amb l'objecte products
-    form = ProductForm(obj = product)
-    form.category_id.choices = [(category.id, category.name) for category in categories]
+        # Check if the current user is the owner of the product
+        if current_user.role == Role.wanner and product.seller_id != current_user.id:
+            flash("No tienes permiso para editar este producto.", "danger")
+            return redirect(url_for('main_bp.product_list'))
 
-    if form.validate_on_submit():
-        # dades del formulari a l'objecte product
-        form.populate_obj(product)
+        categories = Category.get_all()
 
-        # si hi ha foto
-        filename = __manage_photo_file(form.photo_file)
-        if filename:
-            product.photo = filename
+        form = ProductForm(obj=product)
+        form.category_id.choices = [(category.id, category.name) for category in categories]
 
-        # update!
-        db.session.add(product)
-        db.session.commit()
+        if form.validate_on_submit():
+            form.populate_obj(product)
 
-        # https://en.wikipedia.org/wiki/Post/Redirect/Get
-        flash("Producte actualitzat", "success")
-        return redirect(url_for('main_bp.product_read', product_id = product_id))
-    else: # GET
-        return render_template('products/update.html', product_id = product_id, form = form)
+            # Handle photo upload here
+            # filename = __manage_photo_file(form.photo_file)
+            # if filename:
+            #     product.photo = filename
 
-@main_bp.route('/products/delete/<int:product_id>',methods = ['GET', 'POST'])
+            product.save()
+
+            flash("Producte actualitzat", "success")
+            return redirect(url_for('main_bp.product_read', product_id=product_id))
+
+        return render_template('products/update.html', product_id=product_id, form=form)
+    except Exception as e:
+        flash(f"Error updating product: {str(e)}", "error")
+        return redirect(url_for('main_bp.product_list'))
+
+@main_bp.route('/products/delete/<int:product_id>', methods=['GET', 'POST'])
 @login_required
 @require_delete_permission.require(http_exception=403)
 def product_delete(product_id):
-    product = db.session.query(Product).filter(Product.id == product_id).one()
+    try:
+        product = Product.get(product_id)
 
-    # Comprovació de que el user es el creador del product
-    if current_user.role == Role.wanner and product.seller_id != current_user.id:
-        flash("No tienes permiso para eliminar este producto.", "danger")
+        # Check if the current user is the owner of the product
+        if current_user.role == Role.wanner and product.seller_id != current_user.id:
+            flash("No tienes permiso para eliminar este producto.", "danger")
+            return redirect(url_for('main_bp.product_list'))
+
+        form = DeleteForm()
+        if form.validate_on_submit():
+            product.delete()
+
+            flash("Producte esborrat", "success")
+            return redirect(url_for('main_bp.product_list'))
+
+        return render_template('products/delete.html', form=form, product=product)
+    except Exception as e:
+        flash(f"Error deleting product: {str(e)}", "error")
         return redirect(url_for('main_bp.product_list'))
-
-    form = DeleteForm()
-    if form.validate_on_submit():
-        db.session.delete(product)
-        db.session.commit()
-
-        flash("Producte esborrat", "success")
-        return redirect(url_for('main_bp.product_list'))
-    else:
-        return render_template('products/delete.html', form = form, product = product)
-
-__uploads_folder = os.path.abspath(os.path.dirname(__file__)) + "/static/products/"
 
 def __manage_photo_file(photo_file):
     # si hi ha fitxer
