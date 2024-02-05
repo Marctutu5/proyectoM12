@@ -2,3 +2,10 @@
 .env
 .vscode
 __pycache__
+database.db
+app.log
+app.log.1
+app.log.2
+app.log.3
+database.db
+
