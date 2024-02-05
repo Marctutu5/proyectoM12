@@ -30,12 +30,41 @@ class User(BaseMixin, SerializableMixin, UserMixin, db.Model):
     password = db.Column(db.String, nullable=False)
     created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    role = db.Column(db.String) 
+    role = db.Column(db.String)
     email_token = db.Column(db.String(255), nullable=True)
     verified = db.Column(db.Boolean, default=False)
+    # Token auth
+    token = db.Column(db.String, unique=True, nullable=True)
+    token_expiration = db.Column(db.DateTime, nullable=True)
+
+    # Class variable from SerializableMixin to exclude the password from serialization
+    exclude_attr = ['password']
 
     def get_id(self):
         return self.email
+
+    def get_token(self, expires_in=3600):
+        now = datetime.now(timezone.utc)
+        if self.token and self.token_expiration.replace(tzinfo=timezone.utc) > now + timedelta(seconds=60):
+            return self.token
+        self.token = secrets.token_hex(16)
+        self.token_expiration = now + timedelta(seconds=expires_in)
+        db.session.add(self)
+        db.session.commit()
+        return self.token
+
+    def revoke_token(self):
+        self.token_expiration = datetime.now(timezone.utc) - timedelta(seconds=1)
+        db.session.add(self)
+        db.session.commit()
+
+    @staticmethod
+    def check_token(token):
+        user = User.query.filter_by(token=token).one_or_none()
+        if user is None or user.token_expiration.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
+            return None
+        return user
+
 
 class BlockedUser(BaseMixin, SerializableMixin, db.Model):
     __tablename__ = "blocked_users"

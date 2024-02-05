@@ -7,6 +7,294 @@
 	},
 	"item": [
 		{
+			"name": "Auth token",
+			"item": [
+				{
+					"name": "Create token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status CREATED\", function () {",
+									"    pm.response.to.be.success;",
+									"    pm.response.to.have.status(200)",
+									"})",
+									"",
+									"pm.test(\"JSON response\", function () {",
+									"    pm.response.to.be.json;",
+									"    pm.response.to.be.an(\"object\");",
+									"    pm.response.to.have.jsonBody(\"success\");",
+									"    pm.response.to.have.jsonBody(\"data\");",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"});",
+									"",
+									"pm.test(\"JSON response: success\", function () {",
+									"    var jsonResponse = pm.response.json();",
+									"    pm.expect(jsonResponse.success).to.be.a(\"boolean\");",
+									"    pm.expect(jsonResponse.success).to.eql(true);",
+									"});",
+									"",
+									"pm.test(\"JSON response: data\", function () {",
+									"    var jsonResponse = pm.response.json();",
+									"    pm.expect(jsonResponse.data).to.be.an(\"object\");",
+									"    pm.expect(jsonResponse.data).to.have.all.keys(\"token\");",
+									"    // Store last token to test other web services",
+									"    pm.collectionVariables.set(\"token\", jsonResponse.data.token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/tokens",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"tokens"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create token",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/tokens",
+									"host": [
+										"{{URL_ENDPOINT}}"
+									],
+									"path": [
+										"api",
+										"{{API_VERSION}}",
+										"tokens"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/2.3.7 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 30 Jan 2024 08:08:35 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "87"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"token\": \"0697ed128aa53677cd93db2eb3bbe556\"\n    },\n    \"success\": true\n}"
+						}
+					]
+				},
+				{
+					"name": "Create token UNAUTHORIZED",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status UNAUTHORIZED\", function () {",
+									"    pm.response.to.be.unauthorized;",
+									"    pm.response.to.have.status(401)",
+									"})",
+									"",
+									"pm.test(\"JSON response\", function () {",
+									"    pm.response.to.be.json;",
+									"    pm.response.to.be.an(\"object\");",
+									"    pm.response.to.have.jsonBody(\"success\");",
+									"    pm.response.to.not.have.jsonBody(\"data\");",
+									"    pm.response.to.have.jsonBody(\"error\");",
+									"});",
+									"",
+									"pm.test(\"JSON response: success\", function () {",
+									"    var jsonResponse = pm.response.json();",
+									"    pm.expect(jsonResponse.success).to.be.a(\"boolean\");",
+									"    pm.expect(jsonResponse.success).to.eql(false);",
+									"});",
+									"",
+									"pm.test(\"JSON response: error\", function () {",
+									"    var jsonResponse = pm.response.json();",
+									"    pm.expect(jsonResponse.error).to.be.an(\"string\");",
+									"    pm.expect(jsonResponse.error).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/tokens",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"tokens"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create token UNAUTHORIZED",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/tokens",
+									"host": [
+										"{{URL_ENDPOINT}}"
+									],
+									"path": [
+										"api",
+										"{{API_VERSION}}",
+										"tokens"
+									]
+								}
+							},
+							"status": "UNAUTHORIZED",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/2.3.7 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 30 Jan 2024 08:17:40 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "50"
+								},
+								{
+									"key": "WWW-Authenticate",
+									"value": "Basic realm=\"Authentication Required\""
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Unauthorized\",\n    \"success\": false\n}"
+						}
+					]
+				}
+			]
+		},
+		{
 			"name": "Stores",
 			"item": [
 				{
@@ -936,6 +1224,147 @@
 					]
 				},
 				{
+					"name": "Create item UNAUTHORIZED",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status UNAUTHORIZED\", function () {",
+									"    pm.response.to.be.unauthorized;",
+									"    pm.response.to.have.status(401)",
+									"})",
+									"",
+									"pm.test(\"JSON response\", function () {",
+									"    pm.response.to.be.json;",
+									"    pm.response.to.be.an(\"object\");",
+									"    pm.response.to.have.jsonBody(\"success\");",
+									"    pm.response.to.not.have.jsonBody(\"data\");",
+									"    pm.response.to.have.jsonBody(\"error\");",
+									"});",
+									"",
+									"pm.test(\"JSON response: success\", function () {",
+									"    var jsonResponse = pm.response.json();",
+									"    pm.expect(jsonResponse.success).to.be.a(\"boolean\");",
+									"    pm.expect(jsonResponse.success).to.eql(false);",
+									"});",
+									"",
+									"pm.test(\"JSON response: error\", function () {",
+									"    var jsonResponse = pm.response.json();",
+									"    pm.expect(jsonResponse.error).to.be.an(\"string\");",
+									"    pm.expect(jsonResponse.error).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nom\": \"{{$randomProduct}}\",\n    \"unitats\": {{$randomInt}},\n    \"store_id\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/items",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"items"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create item UNAUTHORIZED",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"nom\": \"{{$randomProduct}}\",\n    \"unitats\": {{$randomInt}},\n    \"store_id\": 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/items",
+									"host": [
+										"{{URL_ENDPOINT}}"
+									],
+									"path": [
+										"api",
+										"{{API_VERSION}}",
+										"items"
+									]
+								}
+							},
+							"status": "UNAUTHORIZED",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/2.3.7 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 30 Jan 2024 08:39:59 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "50"
+								},
+								{
+									"key": "WWW-Authenticate",
+									"value": "Bearer realm=\"Authentication Required\""
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Unauthorized\",\n    \"success\": false\n}"
+						}
+					]
+				},
+				{
 					"name": "Read item",
 					"event": [
 						{
@@ -1707,13 +2136,187 @@
 						}
 					]
 				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
 			]
+		},
+		{
+			"name": "Revoke token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status NO CONTENT\", function () {",
+							"    pm.response.to.have.status(204)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/tokens",
+					"host": [
+						"{{URL_ENDPOINT}}"
+					],
+					"path": [
+						"api",
+						"{{API_VERSION}}",
+						"tokens"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Revoke token",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/tokens",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"tokens"
+							]
+						}
+					},
+					"status": "NO CONTENT",
+					"code": 204,
+					"_postman_previewlanguage": "html",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.3.7 Python/3.8.10"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 30 Jan 2024 09:25:54 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/html; charset=utf-8"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": null
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	],
 	"variable": [
 		{
 			"key": "item_id",
 			"value": ""
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
 		}
 	]
 }
