@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from . import api_bp
-from ..models import Order
+from ..models import Order, ConfirmedOrder
 from .. import db_manager as db
 
 @api_bp.route('/orders', methods=['POST'])
@@ -31,3 +31,24 @@ def anular_oferta(id):
         return jsonify({'success': True}), 204
     else:
         return jsonify({'error': 'Bad Request', 'message': 'No se pudo anular la oferta', 'success': False}), 400
+
+@api_bp.route('/orders/<int:id>/confirmed', methods=['POST'])
+def aceptar_oferta(id):
+    order = Order.query.get_or_404(id)
+    
+    # Creamos una instancia de ConfirmedOrder utilizando el método create del mixin
+    try:
+        confirmed_order = ConfirmedOrder.create(order=order)
+        return jsonify({'message': 'Oferta aceptada exitosamente', 'success': True}), 200
+    except Exception as e:
+        return jsonify({'error': 'Internal Server Error', 'message': str(e), 'success': False}), 500
+
+@api_bp.route('/orders/<int:id>/confirmed', methods=['DELETE'])
+def anular_oferta_aceptada(id):
+    confirmed_order = ConfirmedOrder.query.filter_by(order_id=id).first_or_404()
+    
+    try:
+        confirmed_order.delete()
+        return jsonify({'message': 'Oferta aceptada anulada exitosamente', 'success': True}), 200
+    except Exception as e:
+        return jsonify({'error': 'Internal Server Error', 'message': str(e), 'success': False}), 500
