@@ -2,7 +2,8 @@ from . import db_manager as db
 from .mixins import BaseMixin, SerializableMixin
 from sqlalchemy.sql import func
 from flask_login import UserMixin
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+import secrets
 
 class Product(BaseMixin, SerializableMixin, db.Model):
     __tablename__ = "products"
