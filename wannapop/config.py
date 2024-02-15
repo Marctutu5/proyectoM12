@@ -8,13 +8,12 @@ SECRET_KEY = "Valor aleatori molt llarg i super secret"
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 # paràmetre que farà servir SQLAlchemy per a connectar-se
-SQLALCHEMY_DATABASE_URI = "sqlite:///" + BASEDIR + "/../database.db"
-
+SQLALCHEMY_DATABASE_URI = "postgresql://2dd09:0vOxXzRcjty38wSP@37.27.3.70:5432/2dd09_pg"
 # mostre als logs les ordres SQL que s'executen
 SQLALCHEMY_ECHO = True
 
 SECRET_KEY="Valor aleatori molt llarg i super secret"
-SQLITE_FILE_RELATIVE_PATH="sqlite/database.db"
+# SQLITE_FILE_RELATIVE_PATH="sqlite/database.db"
 
 MAIL_SENDER_NAME="Administrador"
 MAIL_SENDER_ADDR="2daw.equip09@fp.insjoaquimmir.cat"
