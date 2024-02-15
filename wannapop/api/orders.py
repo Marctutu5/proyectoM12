@@ -5,9 +5,17 @@ from ..models import Order, ConfirmedOrder
 from .. import db_manager as db
 
 @api_bp.route('/orders', methods=['POST'])
+@token_auth.login_required
 def crear_oferta():
+    current_user = token_auth.current_user()
+    current_user_id = current_user.id
+
+    # # Obtener el producto asociado con la orden
+    # order = Order.query.get_or_404(id)
+    # if current_user_id == order.buyer_id:
     data = request.get_json()
     # Validar datos recibidos aquí
+    data['buyer_id'] = current_user_id
     order = Order.create(**data)
     if order:
         return jsonify({'data': order.to_dict(), 'success': True}), 201
@@ -15,23 +23,39 @@ def crear_oferta():
         return jsonify({'error': 'Bad Request', 'message': 'No se pudo crear la oferta', 'success': False}), 400
 
 @api_bp.route('/orders/<int:id>', methods=['PUT'])
+@token_auth.login_required
 def editar_oferta(id):
+    current_user = token_auth.current_user()
+    current_user_id = current_user.id
+
     order = Order.query.get_or_404(id)
-    data = request.get_json()
-    # Validar datos recibidos aquí
-    updated_order = order.update(**data)
-    if updated_order:
-        return jsonify({'data': updated_order.to_dict(), 'success': True}), 200
+    if current_user_id == order.buyer_id:
+        data = request.get_json()
+        # Validar datos recibidos aquí
+        updated_order = order.update(**data)
+        if updated_order:
+            return jsonify({'data': updated_order.to_dict(), 'success': True}), 200
+        else:
+            return jsonify({'error': 'Bad Request', 'message': 'No se pudo actualizar la oferta', 'success': False}), 400
     else:
-        return jsonify({'error': 'Bad Request', 'message': 'No se pudo actualizar la oferta', 'success': False}), 400
+        return jsonify({'error': 'Forbidden', 'message': 'No tiene permiso para aceptar esta oferta', 'success': False}), 403
+
 
 @api_bp.route('/orders/<int:id>', methods=['DELETE'])
+@token_auth.login_required
 def anular_oferta(id):
+    current_user = token_auth.current_user()
+    current_user_id = current_user.id
+
     order = Order.query.get_or_404(id)
-    if order.delete():
-        return jsonify({'success': True}), 204
+    if current_user_id == order.buyer_id:
+        if order.delete():
+            return jsonify({'success': True}), 204
+        else:
+            return jsonify({'error': 'Bad Request', 'message': 'No se pudo anular la oferta', 'success': False}), 400
     else:
-        return jsonify({'error': 'Bad Request', 'message': 'No se pudo anular la oferta', 'success': False}), 400
+        return jsonify({'error': 'Forbidden', 'message': 'No tiene permiso para aceptar esta oferta', 'success': False}), 403
+
 
 @api_bp.route('/orders/<int:id>/confirmed', methods=['POST'])
 @token_auth.login_required
