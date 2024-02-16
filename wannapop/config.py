@@ -7,15 +7,15 @@ SECRET_KEY = "Valor aleatori molt llarg i super secret"
 # ruta absoluta d'aquesta carpeta
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
-# paràmetre que farà servir SQLAlchemy per a connectar-se
-SQLALCHEMY_DATABASE_URI = "sqlite:///" + BASEDIR + "/../database.db"
+# Configuració per a MySQL
+MYSQL_USERNAME = '2dd09'
+MYSQL_PASSWORD = '0vOxXzRcjty38wSP'
+MYSQL_HOST = '37.27.3.70'
+MYSQL_PORT = '3306'
+MYSQL_DB_NAME = '2dd09_flask4'
+SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{MYSQL_USERNAME}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB_NAME}"
 
-# mostre als logs les ordres SQL que s'executen
-SQLALCHEMY_ECHO = True
-
-SECRET_KEY="Valor aleatori molt llarg i super secret"
-SQLITE_FILE_RELATIVE_PATH="sqlite/database.db"
-
+# Resta de la configuració ...
 MAIL_SENDER_NAME="Administrador"
 MAIL_SENDER_ADDR="2daw.equip09@fp.insjoaquimmir.cat"
 MAIL_SENDER_PASSWORD="BCaIo5785@[="

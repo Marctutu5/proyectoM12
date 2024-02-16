@@ -2,7 +2,7 @@ from flask import request, jsonify
 from .helper_auth import basic_auth, token_auth
 from . import api_bp
 from ..models import Product, Order, db
-
+from flask import current_app
 
 
 @api_bp.route('/products', methods=['GET'])
@@ -22,19 +22,17 @@ def ver_detalle_producto(id):
 @api_bp.route('/products/<int:id>', methods=['PUT'])
 @token_auth.login_required
 def editar_producto_propio(id):
+    product = Product.query.get_or_404(id)
+    # Si no se encuentra el producto, devuelve un error 404
+    if product is None:
+        return jsonify({'error': 'Not Found', 'message': 'Producto no encontrado', 'success': False}), 404
+
     current_user = token_auth.current_user()
     current_user_id = current_user.id
-    product = Product.query.get_or_404(id)
-    if current_user_id == product.seller_id:
+    current_app.logger.debug(f"verify_token: {product.seller_id}={current_user_id}?")
+
+    if current_user_id == int(product.seller_id):
         data = request.get_json()
-
-        # Intenta obtener el producto de la base de datos
-        product = Product.query.get(id)
-
-        # Si no se encuentra el producto, devuelve un error 404
-        if product is None:
-            return jsonify({'error': 'Not Found', 'message': 'Producto no encontrado', 'success': False}), 404
-
         # Actualiza los campos del producto con los datos proporcionados
         try:
             product.update(**data)
