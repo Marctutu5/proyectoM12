@@ -7,8 +7,12 @@ SECRET_KEY = "Valor aleatori molt llarg i super secret"
 # ruta absoluta d'aquesta carpeta
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
+# postgres amb docker-compose
+SQLALCHEMY_DATABASE_URI = "postgresql://user:patata@127.0.0.1:5432/userdb"
+
 # paràmetre que farà servir SQLAlchemy per a connectar-se
-SQLALCHEMY_DATABASE_URI = "postgresql://2dd09:0vOxXzRcjty38wSP@37.27.3.70:5432/2dd09_pg"
+# SQLALCHEMY_DATABASE_URI = "postgresql://2dd09:0vOxXzRcjty38wSP@37.27.3.70:5432/2dd09_pg"
+
 # mostre als logs les ordres SQL que s'executen
 SQLALCHEMY_ECHO = True
 
