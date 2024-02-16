@@ -1,0 +1,535 @@
+{
+	"info": {
+		"_postman_id": "84521dfa-582e-4af0-acde-953a8955a4e6",
+		"name": "ProjecteM12",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32717225",
+		"_collection_link": "https://daw209.postman.co/workspace/My-Workspace~9f7b68f1-0d39-4a68-8abf-e0fb7b180cf0/collection/32717225-84521dfa-582e-4af0-acde-953a8955a4e6?action=share&source=collection_link&creator=32717225"
+	},
+	"item": [
+		{
+			"name": "Statuses",
+			"item": [
+				{
+					"name": "Llistar estats disponibles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/statuses",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"statuses"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Llistar usuaris i filtrar pel nom",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/users?name=B",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"users"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "B"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Veure el perfil públic d’un/a usuari/a",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/users/3",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"users",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Llistar els productes d’un/a usuari/a",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/users/1/products",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"users",
+								"1",
+								"products"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Fer una oferta per un producte",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"product_id\": 5,\n  \"offer\": 88\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/orders",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Editar l’oferta feta per un producte",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"offer\": 999.00\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/orders/9",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"orders",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Anul·lar l’oferta feta per un producte",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/orders/9",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"orders",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Acceptar una oferta rebuda",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/orders/3/confirmed",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"orders",
+								"3",
+								"confirmed"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Anul·lar una oferta aceptada",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/orders/9/confirmed",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"orders",
+								"9",
+								"confirmed"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "Llistar categories disponibles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/categories",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Productes",
+			"item": [
+				{
+					"name": "Llistar productes i filtrar pel títol",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/products?title=wine",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"products"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "wine"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Veure els detalls d’un producte",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/products/6",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"products",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Llistar ofertes rebudes per un producte",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/products/4/orders",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"products",
+								"4",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Editar un producte propi",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n    \"description\": \"Nueva descripcion del producto\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/products/51",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"products",
+								"51"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tokens",
+			"item": [
+				{
+					"name": "Create Token",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/tokens",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"tokens"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Revoke Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/tokens",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"tokens"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "test product token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{URL_ENDPOINT}}/api/{{API_VERSION}}/products/1",
+							"host": [
+								"{{URL_ENDPOINT}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"products",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

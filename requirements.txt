@@ -10,6 +10,7 @@ Flask-Principal==0.4.0
 Flask-SQLAlchemy==3.1.1
 Flask-WTF==1.2.1
 greenlet==3.0.2
+gunicorn==21.2.0
 idna==3.6
 importlib-metadata==7.0.0
 itsdangerous==2.1.2
